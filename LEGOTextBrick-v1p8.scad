@@ -61,10 +61,10 @@ createUnderStuds = (withUnderStuds=="yes") ? true : false;
 /* [Text Parameters] */
 
 // Raised text instead of embossed text?
-raisedText = "no"; // [yes,no]
+raisedText = "yes"; // [yes,no]
 textRaised = (raisedText=="yes") ? true : false;
 
-frontText = "Text Bricks";
+frontText = "";
 frontTextScale = 1.0; // [0:0.01:1]
 
 backText = "";
@@ -131,7 +131,7 @@ ROOF_THICKNESS = 1; // [0.1:0.01:10]
 WALL_THICKNESS = 1.5; // [0.15:0.01:15]
 
 // diameter of the studs (solid cylinders) on top of a brick (mm)
-STUD_DIAMETER = 4.8; // [0.48:0.01:48]
+STUD_DIAMETER = 5.0; // [0.48:0.01:48]
 
 // height of the studs (solid cylinders) on top of a brick (mm)
 STUD_HEIGHT = 1.8; // [0.18:0.01:18]
@@ -140,10 +140,14 @@ STUD_HEIGHT = 1.8; // [0.18:0.01:18]
 UNDERTUBE_OUTER_DIAMETER = 6.41; // [0.64:0.01:64.1]
 
 // inner diameter of the under-tubes (hollow cylinders) on the underside of bricks with length > 1 and width > 1 (mm)
-UNDERTUBE_INNER_DIAMETER = 4.8; // [0.48:0.01:48]
+UNDERTUBE_INNER_DIAMETER = 5.0; // [0.48:0.01:48]
 
 // diameter of the under-studs (solid cylinders) on the underside of bricks with length = 1 or width = 1 (mm)
 UNDERSTUD_DIAMETER = 1.6; // [0.16:0.01:16]
+
+UNDER_STUD_THICKNESS = 0.6; //
+
+UNDER_STUD_CLEARENCE = 2.2; // 
 
 // the necessary play between bricks so that they fit together
 PLAY = 0.2; // [0.02:0.01:2]
@@ -211,6 +215,19 @@ module brick(length=4, width=2, height=3) {
 		}
 	  }
 	}
+  }
+
+  // adding under studs
+  UNDER_STUD_HEIGHT = height*PLATE_HEIGHT - UNDER_STUD_CLEARENCE;
+  if (width == 2) {
+    for (x = [2:2:length - 2]) {
+      difference() {
+        translate([x*UNIT_LENGTH, 1*UNIT_LENGTH, UNDER_STUD_HEIGHT/2 + UNDER_STUD_CLEARENCE])
+          cube([UNDER_STUD_THICKNESS,UNIT_LENGTH*1.8,UNDER_STUD_HEIGHT], center=true);
+        translate([x*UNIT_LENGTH, 1*UNIT_LENGTH, 0])
+          cylinder(h=height*PLATE_HEIGHT-ROOF_THICKNESS+fudge, d = UNDERTUBE_OUTER_DIAMETER-2*tolerance);
+      }
+    }
   }
 
   // The under-studs (smaller solid cylinders) along the length
