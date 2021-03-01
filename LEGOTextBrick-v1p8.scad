@@ -41,10 +41,10 @@ V1.8 - added capability to have raised text instead of embossed text
 /* [Brick Parameters] */
 
 // Brick length (specified in number of studs).
-brickLength = 6; // [1:1:48]
+brickLength = 4; // [1:1:48] (recomend even number)
 
 // Brick width (specified in number of studs).
-brickWidth = 2;  // [1:1:48]
+brickWidth = 4;  // [1:1:48] (recomend even number, and recomend width <= length)
 
 // Brick height (specified in LEGO height units: 3 is normal brick height, 1 is plate height).
 brickHeight = 3; // [1:1:18]
@@ -127,27 +127,34 @@ PLATE_HEIGHT = 3.2; // [0.32:0.01:32]
 // thickness of brick roof (mm)
 ROOF_THICKNESS = 1; // [0.1:0.01:10]
 
+// LEGO 0.0485in = 1.23mm
 // thickness of brick outer wall as in the original 1.5 mm wall without nubs (mm)
-WALL_THICKNESS = 1.5; // [0.15:0.01:15]
+WALL_THICKNESS = 1.1; // [0.15:0.01:15]
 
+// LEGO 0.192in = 4.877mm
+// real 4.9mm -> print out 4.75mm (kind of loos)
 // diameter of the studs (solid cylinders) on top of a brick (mm)
 STUD_DIAMETER = 5.0; // [0.48:0.01:48]
 
 // height of the studs (solid cylinders) on top of a brick (mm)
 STUD_HEIGHT = 1.8; // [0.18:0.01:18]
 
+// LEGO 0.254in = 6.45mm 
+// real 6.45mm -> print out 6.65mm 
 // outer diameter of the under-tubes (hollow cylinders) on the underside of bricks with length > 1 and width > 1 (mm)
-UNDERTUBE_OUTER_DIAMETER = 6.41; // [0.64:0.01:64.1]
+UNDERTUBE_OUTER_DIAMETER = 6.40; // [0.64:0.01:64.1]
 
+// LEGO 0.191in = 4.85mm
+// real 5.2mm -> print out 4.85mm (good)
 // inner diameter of the under-tubes (hollow cylinders) on the underside of bricks with length > 1 and width > 1 (mm)
 UNDERTUBE_INNER_DIAMETER = 5.0; // [0.48:0.01:48]
 
 // diameter of the under-studs (solid cylinders) on the underside of bricks with length = 1 or width = 1 (mm)
 UNDERSTUD_DIAMETER = 1.6; // [0.16:0.01:16]
 
-UNDER_STUD_THICKNESS = 0.6; //
+UNDER_STUD_THICKNESS = 0.7; //
 
-UNDER_STUD_CLEARENCE = 2.2; // 
+UNDER_STUD_CLEARENCE = 2.2; // only useful for Nx2x3 blocks
 
 // the necessary play between bricks so that they fit together
 PLAY = 0.2; // [0.02:0.01:2]
@@ -203,8 +210,8 @@ module brick(length=4, width=2, height=3) {
       }
   }
 
-  // The under-tubes (hollow cylinders)
-  if (width > 1 && length > 1) {
+  if (length >= 2 && width == 2) {
+    // The under-tubes (hollow cylinders)
     for (y = [1:width-1]) {
       for (x = [1:length-1]) {
         difference() {
@@ -215,20 +222,86 @@ module brick(length=4, width=2, height=3) {
 		}
 	  }
 	}
-  }
-
-  // adding under studs
-  UNDER_STUD_HEIGHT = height*PLATE_HEIGHT - UNDER_STUD_CLEARENCE;
-  if (width == 2) {
-    for (x = [2:2:length - 2]) {
-      difference() {
-        translate([x*UNIT_LENGTH, 1*UNIT_LENGTH, UNDER_STUD_HEIGHT/2 + UNDER_STUD_CLEARENCE])
-          cube([UNDER_STUD_THICKNESS,UNIT_LENGTH*1.8,UNDER_STUD_HEIGHT], center=true);
-        translate([x*UNIT_LENGTH, 1*UNIT_LENGTH, 0])
-          cylinder(h=height*PLATE_HEIGHT-ROOF_THICKNESS+fudge, d = UNDERTUBE_OUTER_DIAMETER-2*tolerance);
+    // adding under studs
+    UNDER_STUD_HEIGHT = height*PLATE_HEIGHT - UNDER_STUD_CLEARENCE;
+    if (width == 2) {
+      for (x = [2:2:length - 2]) {
+        difference() {
+          translate([x*UNIT_LENGTH, 1*UNIT_LENGTH, UNDER_STUD_HEIGHT/2 + UNDER_STUD_CLEARENCE])
+            cube([UNDER_STUD_THICKNESS,UNIT_LENGTH*1.8,UNDER_STUD_HEIGHT], center=true);
+          translate([x*UNIT_LENGTH, 1*UNIT_LENGTH, 0])
+            cylinder(h=height*PLATE_HEIGHT-ROOF_THICKNESS+fudge, d = UNDERTUBE_OUTER_DIAMETER-2*tolerance);
+        }
       }
     }
+  } else if (length > 2 && width > 2) {
+    // The under-tubes (hollow cylinders)
+    for (y = [1:width-1]) {
+      for (x = [(y-1)%2 +1:2:length - 1]) {
+        difference() {
+          translate([x*UNIT_LENGTH, y*UNIT_LENGTH, 0])
+            cylinder(h=height*PLATE_HEIGHT-ROOF_THICKNESS+fudge, d = UNDERTUBE_OUTER_DIAMETER-2*tolerance);
+          translate([x*UNIT_LENGTH, y*UNIT_LENGTH, -fudge])
+            cylinder(h=height*PLATE_HEIGHT-ROOF_THICKNESS+fudge, d = UNDERTUBE_INNER_DIAMETER+2*tolerance);				
+        }
+      }
+  	}
+    // adding under studs
+    UNDER_STUD_HEIGHT = height*PLATE_HEIGHT;
+    UNDER_STUD_TIP_SIZE = 3; // real 3mm -> print out 3.2mm (way over tight with outerDia=6.45mm)
+    UNDER_STUD_TIP_POS = 3.5; // 3.5mm 
+    if (width >= 2) {
+        // translate([PLAY/2+tolerance, PLAY/2+tolerance, 0])
+        //   cube([length*UNIT_LENGTH-PLAY-2*tolerance, width*UNIT_LENGTH-PLAY-2*tolerance, height*PLATE_HEIGHT]);
+      intersection() {
+        {
+        translate([PLAY/2+tolerance, PLAY/2+tolerance, 0])
+          cube([length*UNIT_LENGTH-PLAY-2*tolerance, width*UNIT_LENGTH-PLAY-2*tolerance, height*PLATE_HEIGHT]);
+        }
+        union() {
+          difference() {
+            for (x = [0:2:length]) {
+              for (y = [1:2:width-1]) {
+                translate([x*UNIT_LENGTH, y*UNIT_LENGTH, UNDER_STUD_HEIGHT/2]) {
+                  cube([UNDER_STUD_THICKNESS,UNIT_LENGTH*1.7,UNDER_STUD_HEIGHT], center=true);
+                  translate([0,UNDER_STUD_TIP_POS,0])
+                    cube([UNDER_STUD_TIP_SIZE, UNDER_STUD_THICKNESS, UNDER_STUD_HEIGHT], center=true);
+                  translate([0,-UNDER_STUD_TIP_POS,0])
+                    cube([UNDER_STUD_TIP_SIZE, UNDER_STUD_THICKNESS, UNDER_STUD_HEIGHT], center=true);
+                }
+              }
+            }
+            for (y = [1:width-1]) {
+              for (x = [(y-1)%2 +1:2:length - 1]) {
+                  translate([x*UNIT_LENGTH, y*UNIT_LENGTH, -fudge])
+                    cylinder(h=height*PLATE_HEIGHT, d = UNDERTUBE_OUTER_DIAMETER-2*tolerance);
+              }
+            }
+          }
+          difference() {
+            for (x = [1:2:length]) {
+              for (y = [0:2:width+1]) {
+                translate([x*UNIT_LENGTH, y*UNIT_LENGTH, UNDER_STUD_HEIGHT/2]) {
+                  cube([UNIT_LENGTH*1.7,UNDER_STUD_THICKNESS,UNDER_STUD_HEIGHT], center=true);
+                  translate([UNDER_STUD_TIP_POS,0,0])
+                    cube([UNDER_STUD_THICKNESS, UNDER_STUD_TIP_SIZE, UNDER_STUD_HEIGHT], center=true);
+                  translate([-UNDER_STUD_TIP_POS,0,0])
+                    cube([UNDER_STUD_THICKNESS, UNDER_STUD_TIP_SIZE, UNDER_STUD_HEIGHT], center=true);
+                }
+              }
+            }
+            for (y = [1:width-1]) {
+              for (x = [(y-1)%2 +1:2:length - 1]) {
+                  translate([x*UNIT_LENGTH, y*UNIT_LENGTH, -fudge])
+                    cylinder(h=height*PLATE_HEIGHT, d = UNDERTUBE_OUTER_DIAMETER-2*tolerance);
+              }
+            }
+          }
+        }
+      } 
+    }    
   }
+
 
   // The under-studs (smaller solid cylinders) along the length
   if (width == 1 && length > 1 && createUnderStuds) {	
