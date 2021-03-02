@@ -129,7 +129,7 @@ ROOF_THICKNESS = 1; // [0.1:0.01:10]
 
 // LEGO 0.0485in = 1.23mm
 // thickness of brick outer wall as in the original 1.5 mm wall without nubs (mm)
-WALL_THICKNESS = 1.1; // [0.15:0.01:15]
+WALL_THICKNESS = 1.2; // [0.15:0.01:15]
 
 // LEGO 0.192in = 4.877mm
 // real 4.9mm -> print out 4.75mm (kind of loos)
@@ -142,12 +142,12 @@ STUD_HEIGHT = 1.8; // [0.18:0.01:18]
 // LEGO 0.254in = 6.45mm 
 // real 6.45mm -> print out 6.65mm 
 // outer diameter of the under-tubes (hollow cylinders) on the underside of bricks with length > 1 and width > 1 (mm)
-UNDERTUBE_OUTER_DIAMETER = 6.40; // [0.64:0.01:64.1]
+UNDERTUBE_OUTER_DIAMETER = 6.5; // [0.64:0.01:64.1]
 
 // LEGO 0.191in = 4.85mm
 // real 5.2mm -> print out 4.85mm (good)
 // inner diameter of the under-tubes (hollow cylinders) on the underside of bricks with length > 1 and width > 1 (mm)
-UNDERTUBE_INNER_DIAMETER = 5.0; // [0.48:0.01:48]
+UNDERTUBE_INNER_DIAMETER = 5.1; // [0.48:0.01:48]
 
 // diameter of the under-studs (solid cylinders) on the underside of bricks with length = 1 or width = 1 (mm)
 UNDERSTUD_DIAMETER = 1.6; // [0.16:0.01:16]
@@ -248,7 +248,7 @@ module brick(length=4, width=2, height=3) {
   	}
     // adding under studs
     UNDER_STUD_HEIGHT = height*PLATE_HEIGHT;
-    UNDER_STUD_TIP_SIZE = 3; // real 3mm -> print out 3.2mm (way over tight with outerDia=6.45mm)
+    UNDER_STUD_TIP_SIZE = 3.3; // real 3mm -> print out 3.2mm (way over tight with outerDia=6.45mm)
     UNDER_STUD_TIP_POS = 3.5; // 3.5mm 
     if (width >= 2) {
         // translate([PLAY/2+tolerance, PLAY/2+tolerance, 0])
