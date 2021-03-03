@@ -41,10 +41,10 @@ V1.8 - added capability to have raised text instead of embossed text
 /* [Brick Parameters] */
 
 // Brick length (specified in number of studs).
-brickLength = 4; // [1:1:48] (recomend even number)
+brickLength = 16; // [1:1:48] (recomend even number)
 
 // Brick width (specified in number of studs).
-brickWidth = 4;  // [1:1:48] (recomend even number, and recomend width <= length)
+brickWidth = 16;  // [1:1:48] (recomend even number, and recomend width <= length)
 
 // Brick height (specified in LEGO height units: 3 is normal brick height, 1 is plate height).
 brickHeight = 3; // [1:1:18]
@@ -67,13 +67,13 @@ textRaised = (raisedText=="yes") ? true : false;
 frontText = "UD=5.1/6.4";
 frontTextScale = 0.6; // [0:0.01:1]
 
-backText = "V8";
+backText = "V9";
 backTextScale = 0.6; // [0:0.01:1]
 
 leftText = "Wall=1.3"; 
 leftTextScale = 0.6; // [0:0.01:1]
 
-rightText = "TIP=3.3"; 
+rightText = "TIP=3.1"; 
 rightTextScale = 0.6; // [0:0.01:1]
 
 /* [Advanced parameters] */
@@ -153,7 +153,7 @@ UNDERTUBE_INNER_DIAMETER = 5.1; // [0.48:0.01:48]
 UNDERSTUD_DIAMETER = 1.6; // [0.16:0.01:16]
 
 UNDER_STUD_THICKNESS = 0.7; //
-UNDER_STUD_TIP_SIZE = 3.3; // 3mm (little loose) - 3.3mm (too tight) 
+UNDER_STUD_TIP_SIZE = 3.1; // 3mm (little loose) - 3.3mm (too tight) 
 UNDER_STUD_TIP_POS = 3.5; // 3.5mm 
 
 // The 45 degree extra enforcement make large piece stronger (than original LEGO).
